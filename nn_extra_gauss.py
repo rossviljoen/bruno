@@ -1,7 +1,8 @@
 import collections
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+# import tensorflow as tf
 
 Gaussian = collections.namedtuple('Gaussian', ['mu', 'var'])
 State = collections.namedtuple('State', ['num_observations', 'x_sum'])

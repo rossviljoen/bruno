@@ -3,8 +3,9 @@ Much of the Real NVP and weightnorm code was adapted from https://github.com/tae
 and https://github.com/openai/pixel-cnn.
 """
 import numpy as np
-import tensorflow as tf
-from tensorflow.contrib.framework.python.ops import add_arg_scope
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+# from tensorflow.contrib.framework.python.ops import add_arg_scope
 
 
 def int_shape(x):
@@ -374,7 +375,7 @@ class Orthogonal(object):
         }
 
 
-@add_arg_scope
+# @add_arg_scope
 def conv2d_wn(x, num_filters, name, filter_size=[3, 3], stride=[1, 1], pad='SAME', nonlinearity=None, init_scale=1.,
               init=False, ema=None):
     with tf.variable_scope(name):
@@ -404,7 +405,7 @@ def conv2d_wn(x, num_filters, name, filter_size=[3, 3], stride=[1, 1], pad='SAME
         return x
 
 
-@add_arg_scope
+# @add_arg_scope
 def dense_wn(x, num_units, name, nonlinearity=None, init_scale=1., init=False, ema=None):
     with tf.variable_scope(name):
         V = get_var_maybe_avg('V', ema, shape=[int(x.get_shape()[1]), num_units], dtype=tf.float32,

@@ -7,7 +7,7 @@ import sys
 import time
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import logger
 import utils
@@ -25,6 +25,8 @@ assert args.nr_gpu == len(''.join(filter(str.isdigit, os.environ["CUDA_VISIBLE_D
 np.random.seed(seed=42)
 tf.reset_default_graph()
 tf.set_random_seed(args.tf_seed)
+# Needed for tf.placeholder()
+tf.disable_eager_execution()
 
 # config
 configs_dir = __file__.split('/')[-2]
@@ -66,7 +68,8 @@ for variable in all_params:
     shape = variable.get_shape()
     variable_parameters = 1
     for dim in shape:
-        variable_parameters *= dim.value
+        # variable_parameters *= dim.value
+        variable_parameters *= dim
     n_parameters += variable_parameters
 print('Number of parameters', n_parameters)
 
@@ -81,7 +84,10 @@ log_probs = model(x_in_eval)[0]
 eval_loss = config.eval_loss(log_probs) if hasattr(config, 'eval_loss') else config.loss(log_probs)
 
 for i in range(args.nr_gpu):
-    xs.append(tf.placeholder(tf.float32, shape=(config.batch_size / args.nr_gpu,) + config.obs_shape))
+    print()
+    # xs.append(tf.placeholder(tf.float32, shape=(config.batch_size / args.nr_gpu,) + config.obs_shape))
+    xs.append(tf.placeholder(tf.float32, shape=tuple(map(int, (config.batch_size / args.nr_gpu,) + config.obs_shape))))
+    
     with tf.device('/gpu:%d' % i):
         # train
         with tf.variable_scope('gpu_%d' % i):
