@@ -122,7 +122,7 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
                  var_init=1.,
                  corr_init=0.1,
                  temp=1):
-        GaussianRecurrentLayer.__init__(self, mu_init, var_init, corr_init)
+        GaussianRecurrentLayer.__init__(self, shape, mu_init, var_init, corr_init)
 
         with tf.variable_scope("gaussian"):
             self.temperature_vbl = tf.get_variable(
