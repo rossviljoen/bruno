@@ -122,15 +122,16 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
                  var_init=1.,
                  corr_init=0.1,
                  temp=1):
+        self.temp = temp
         GaussianRecurrentLayer.__init__(self, shape, mu_init, var_init, corr_init)
-
-        with tf.variable_scope("gaussian"):
-            self.temperature_vbl = tf.get_variable(
-                "temperature",
-                (1,) + shape,
-                tf.float32,
-                tf.constant_initializer(temp))
-            self.temp = self.temperature_vbl
+        
+        # with tf.variable_scope("gaussian"):
+        #     self.temperature_vbl = tf.get_variable(
+        #         "temperature",
+        #         (1,) + shape,
+        #         tf.float32,
+        #         tf.constant_initializer(temp))
+        #     self.temp = self.temperature_vbl
             
     def update_distribution(self, observation):
         mu, sigma = self.current_distribution
