@@ -115,3 +115,31 @@ class GaussianRecurrentLayer(object):
             seed=self.seed_rng.randint(317070),
             name="Normal_sampler"
         )
+
+class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
+    def __init__(self, shape,
+                 mu_init=0.,
+                 var_init=1.,
+                 corr_init=0.1,
+                 temp=1):
+        GaussianRecurrentLayer.__init__(self, mu_init, var_init, corr_init)
+
+        with tf.variable_scope("gaussian"):
+            self.temperature_vbl = tf.get_variable(
+                "temperature",
+                (1,) + shape,
+                tf.float32,
+                tf.constant_initializer(temp))
+            self.temp = self.temperature_vbl
+            
+    def update_distribution(self, observation):
+        mu, sigma = self.current_distribution
+        i, x_sum = self._state
+        x = observation
+        x_sum_out = x_sum + x
+        i += 1
+        sigma_out = (self.temp * self.cov * (self.var - self.cov)) / (self.var + (i - self.temp) * self.cov)
+        mu_out = sigma_out * ((self.mu / self.cov) + (x_sum_out / (self.temp * (self.var - self.cov))))
+
+        self.current_distribution = Gaussian(mu_out, sigma_out)
+        self._state = State(i, x_sum_out)
