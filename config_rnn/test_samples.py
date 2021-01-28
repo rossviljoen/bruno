@@ -30,6 +30,7 @@ print('input args:\n', json.dumps(vars(args), indent=4, separators=(',', ':'))) 
 # -----------------------------------------------------------------------------
 rng = np.random.RandomState(42)
 tf.set_random_seed(42)
+tf.disable_eager_execution()
 
 # config
 configs_dir = __file__.split('/')[-2]
