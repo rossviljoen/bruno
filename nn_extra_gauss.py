@@ -142,7 +142,7 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
         x_sum_out = x_sum + x
         i += 1
         sigma_out = ((self.temp * self.cov * (self.var - self.cov)) /
-                     (self.var + (i - self.temp) * self.cov)) + (self.var - self.cov)
+                     (self.temp * (self.var - self.cov) + (i * self.cov))) + (self.var - self.cov)
         mu_out = sigma_out * ((self.mu / self.cov) +
                               (x_sum_out / (self.temp * (self.var - self.cov))))
 
