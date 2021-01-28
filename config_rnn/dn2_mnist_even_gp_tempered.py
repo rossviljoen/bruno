@@ -38,12 +38,12 @@ print('obs shape', obs_shape)
 
 ndim = np.prod(obs_shape[1:])
 corr_init = np.ones((ndim,), dtype='float32') * 0.1
-temp = 0.1
+temp = 1
 
 optimizer = 'rmsprop'
 learning_rate = 0.001
 lr_decay = 0.999995
-max_iter = 50000
+max_iter = 10000
 save_every = 1000
 
 validate_every = 1000
