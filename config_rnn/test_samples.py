@@ -6,7 +6,7 @@ import time
 
 import matplotlib
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import utils
 from config_rnn import defaults

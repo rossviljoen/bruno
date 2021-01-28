@@ -139,8 +139,10 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
         x = observation
         x_sum_out = x_sum + x
         i += 1
-        sigma_out = (self.temp * self.cov * (self.var - self.cov)) / (self.var + (i - self.temp) * self.cov)
-        mu_out = sigma_out * ((self.mu / self.cov) + (x_sum_out / (self.temp * (self.var - self.cov))))
+        sigma_out = ((self.temp * self.cov * (self.var - self.cov)) /
+                     (self.var + (i - self.temp) * self.cov)) + (self.var - self.cov)
+        mu_out = sigma_out * ((self.mu / self.cov) +
+                              (x_sum_out / (self.temp * (self.var - self.cov))))
 
         self.current_distribution = Gaussian(mu_out, sigma_out)
         self._state = State(i, x_sum_out)
