@@ -134,17 +134,17 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
                 trainable=False
             )
             self.temp = self.temperature_vbl
-            
+
     def update_distribution(self, observation):
         mu, sigma = self.current_distribution
         i, x_sum = self._state
         x = observation
         x_sum_out = x_sum + x
         i += 1
-        sigma_out = ((self.temp * self.cov * (self.var - self.cov)) /
-                     (self.temp * (self.var - self.cov) + (i * self.cov))) + (self.var - self.cov)
-        mu_out = sigma_out * ((self.mu / self.cov) +
-                              (x_sum_out / (self.temp * (self.var - self.cov))))
+        dt = self.cov / (self.temp * self.var + self.cov * (i - self.temp))
+        mu_out = (1. - dt) * mu + observation * dt
+        var_out = (1. - dt) * sigma + (self.var - self.cov) * dt
 
-        self.current_distribution = Gaussian(mu_out, sigma_out)
+        self.current_distribution = Gaussian(mu_out, var_out)
         self._state = State(i, x_sum_out)
+        
