@@ -38,7 +38,7 @@ print('obs shape', obs_shape)
 
 ndim = np.prod(obs_shape[1:])
 corr_init = np.ones((ndim,), dtype='float32') * 0.1
-temp = 1
+temp = 0.01
 
 optimizer = 'rmsprop'
 learning_rate = 0.001

@@ -33,6 +33,7 @@ print('obs shape', obs_shape)
 
 ndim = np.prod(obs_shape[1:])
 corr_init = np.ones((ndim,), dtype='float32') * 0.1
+temp = 0.01
 
 optimizer = 'rmsprop'
 learning_rate = 0.001
@@ -67,7 +68,7 @@ def build_model(x, init=False, sampling_mode=False):
 
     global student_layer
     if student_layer is None:
-        student_layer = nn_extra_gauss.GaussianRecurrentLayer(shape=(ndim,), corr_init=corr_init)
+        student_layer = nn_extra_gauss.TemperedGaussianRecurrentLayer(shape=(ndim,), corr_init=corr_init, temp=temp)
 
     x_shape = nn_extra_nvp.int_shape(x)
     x_bs = tf.reshape(x, (x_shape[0] * x_shape[1], x_shape[2], x_shape[3], x_shape[4]))
