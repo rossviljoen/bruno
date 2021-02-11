@@ -14,7 +14,7 @@ import utils
 from config_rnn import defaults
 
 np.set_printoptions(suppress=True)
-
+tf.disable_eager_execution()
 
 def classify(config_name, seq_len, n_trials, batch_size):
     configs_dir = __file__.split('/')[-2]
