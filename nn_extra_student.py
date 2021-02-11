@@ -1,7 +1,8 @@
 import collections
 
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 Student = collections.namedtuple('Student', ['mu', 'var', 'nu'])
 State = collections.namedtuple('State', ['num_observations', 'beta', 'x_sum', 'k'])
