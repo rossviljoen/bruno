@@ -138,8 +138,8 @@ class TemperedGaussianRecurrentLayer(GaussianRecurrentLayer):
     def update_distribution(self, observation):
         mu, sigma = self.current_distribution
         i, x_sum = self._state
-        x = observation
-        x_sum_out = x_sum + x
+        x_zm = x - self.mu
+        x_sum_out = x_sum + x_zm
         i += 1
         dt = self.cov / (self.temp * self.var + self.cov * (i - self.temp))
         mu_out = (1. - dt) * mu + observation * dt

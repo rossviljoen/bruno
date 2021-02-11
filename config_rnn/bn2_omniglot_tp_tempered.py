@@ -34,13 +34,13 @@ print('obs shape', obs_shape)
 ndim = np.prod(obs_shape[1:])
 corr_init = np.ones((ndim,), dtype='float32') * 0.1
 nu_init = 1000
+temp = 0.01
 
 optimizer = 'rmsprop'
 learning_rate = 0.001
 lr_decay = 0.999995
 
 scale_student_grad = 0.
-# max_iter = 200000
 max_iter = 8000
 save_every = 1000
 student_grad_schedule = {0: 0., 100: 0.1}
@@ -69,7 +69,7 @@ def build_model(x, init=False, sampling_mode=False):
 
     global student_layer
     if student_layer is None:
-        student_layer = nn_extra_student.StudentRecurrentLayer(shape=(ndim,), corr_init=corr_init, nu_init=nu_init)
+        student_layer = nn_extra_student.TemperedStudentRecurrentLayer(shape=(ndim,), corr_init=corr_init, nu_init=nu_init, temp=temp)
 
     x_shape = nn_extra_nvp.int_shape(x)
     x_bs = tf.reshape(x, (x_shape[0] * x_shape[1], x_shape[2], x_shape[3], x_shape[4]))

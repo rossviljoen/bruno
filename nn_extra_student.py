@@ -148,3 +148,46 @@ class StudentRecurrentLayer(object):
         t_sample = mu + tf.sqrt(var * (nu - 2) / nu) * t
 
         return t_sample
+
+class TemperedStudentRecurrentLayer(StudentRecurrentLayer):
+    def __init__(self, shape,
+                 nu_init=1000,
+                 mu_init=0.,
+                 var_init=1.,
+                 corr_init=0.1,
+                 min_nu=2.,
+                 temp=1):
+        super().__init__(shape, nu_init, mu_init, var_init, corr_init, min_nu)
+        
+        with tf.variable_scope("gaussian"):
+            self.temperature_vbl = tf.get_variable(
+                "temperature",
+                (1,) + shape,
+                tf.float32,
+                tf.constant_initializer(temp),
+                trainable=False
+            )
+            self.temp = self.temperature_vbl
+
+    def update_distribution(self, observation):
+        mu, sigma, nu = self.current_distribution
+        i, beta, x_sum, k = self._state
+        x = observation
+        x_zm = x - self.mu
+        x_sum_out = x_sum + x_zm
+        i += 1
+        dt = self.cov / (self.temp * self.var + self.cov * (i - self.temp))
+        nu_out = nu + 1
+        mu_out = (1. - dt) * mu + observation * dt
+
+        a_i = (self.cov * (i - self.temp - 1.) + self.temp * self.var) / ((self.var - self.cov) * (self.cov * (i - self.temp) + self.temp * self.var))
+        b_i = -1. * self.cov / ((self.var - self.cov) * (self.cov * (i - self.temp) + self.temp * self.var))
+        b_i_prev = -1. * self.cov / ((self.var - self.cov) * (self.cov * (i - self.temp - 1.) + self.temp * self.var))
+
+        beta_out = beta + (a_i - b_i) * tf.square(x_zm) + b_i * tf.square(x_sum + x_zm) - b_i_prev * tf.square(x_sum)
+        k_out = (1. - dt) * k + (self.var - self.cov) * dt
+
+        sigma_out = (self.nu + beta_out - 2.) / (nu_out - 2.) * k_out
+
+        self.current_distribution = Student(mu_out, sigma_out, nu_out)
+        self._state = State(i, beta_out, x_sum_out, k_out)
