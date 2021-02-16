@@ -18,7 +18,7 @@ parser.add_argument('--config_name', type=str, required=True, help='Configuratio
 parser.add_argument('--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
 parser.add_argument('--resume', type=int, default=0, help='Resume training from a checkpoint?')
 parser.add_argument('--tf_seed', type=int, default=0, help='tf rng seed')
-parser.add_argument('--temp', type=int, default=-1, help='temperature (only for use with a tempered config)')
+parser.add_argument('--temp', type=float, default=None, help='temperature (only for use with a tempered config)')
 args = parser.parse_args()
 print('input args:\n', json.dumps(vars(args), indent=4, separators=(',', ':')))
 assert args.nr_gpu == len(''.join(filter(str.isdigit, os.environ["CUDA_VISIBLE_DEVICES"])))
@@ -34,12 +34,12 @@ configs_dir = __file__.split('/')[-2]
 config = importlib.import_module('%s.%s' % (configs_dir, args.config_name))
 
 # Set temperature if supplied
-if args.temp != -1:
+if args.temp is not None:
     config.set_temp(args.temp)
     
 if not args.resume:
     experiment_id = '%s%s-%s' % (args.config_name.split('.')[-1],
-                                  "-" + str(args.temp) if args.temp != -1 else "",
+                                  "-" + str(args.temp) if args.temp is not None else "",
                                   time.strftime("%Y_%m_%d", time.localtime()))
     utils.autodir('metadata')
     save_dir = 'metadata/' + experiment_id
