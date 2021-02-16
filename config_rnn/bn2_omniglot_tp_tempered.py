@@ -41,7 +41,7 @@ learning_rate = 0.001
 lr_decay = 0.999995
 
 scale_student_grad = 0.
-max_iter = 8000
+max_iter = 10000
 save_every = 1000
 student_grad_schedule = {0: 0., 100: 0.1}
 learning_rate_schedule = {}
