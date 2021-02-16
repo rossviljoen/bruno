@@ -29,13 +29,14 @@ tf.set_random_seed(args.tf_seed)
 # Needed for tf.placeholder()
 tf.disable_eager_execution()
 
-# Set temperature if supplied
-if args.temp != -1:
-    config.set_temp(args.temp)
-
 # config
 configs_dir = __file__.split('/')[-2]
 config = importlib.import_module('%s.%s' % (configs_dir, args.config_name))
+
+# Set temperature if supplied
+if args.temp != -1:
+    config.set_temp(args.temp)
+    
 if not args.resume:
     experiment_id = '%s%s-%s' % (args.config_name.split('.')[-1],
                                   "-" + str(args.temp) if args.temp != -1 else "",
