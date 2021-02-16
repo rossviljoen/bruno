@@ -69,7 +69,7 @@ def build_model(x, init=False, sampling_mode=False):
 
     global student_layer
     if student_layer is None:
-        print(temp)
+        print("Temperature: ", temp)
         student_layer = nn_extra_student.TemperedStudentRecurrentLayer(shape=(ndim,), corr_init=corr_init, nu_init=nu_init, temp=temp)
 
     x_shape = nn_extra_nvp.int_shape(x)

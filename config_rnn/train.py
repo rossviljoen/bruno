@@ -29,11 +29,17 @@ tf.set_random_seed(args.tf_seed)
 # Needed for tf.placeholder()
 tf.disable_eager_execution()
 
+# Set temperature if supplied
+if temp != -1:
+    config.set_temp(args.temp)
+
 # config
 configs_dir = __file__.split('/')[-2]
 config = importlib.import_module('%s.%s' % (configs_dir, args.config_name))
 if not args.resume:
-    experiment_id = '%s-%s' % (args.config_name.split('.')[-1], time.strftime("%Y_%m_%d", time.localtime()))
+    experiment_id = '%s%s-%s' % (args.config_name.split('.')[-1],
+                                  "-" + str(temp) if temp != -1 else "",
+                                  time.strftime("%Y_%m_%d", time.localtime()))
     utils.autodir('metadata')
     save_dir = 'metadata/' + experiment_id
     utils.autodir(save_dir)
@@ -55,10 +61,6 @@ sys.stderr = sys.stdout
 print('exp_id', experiment_id)
 if args.resume:
     print('Resuming training')
-
-# Set temperature if supplied
-if temp != -1:
-    config.set_temp(args.temp)
 
 # create the model
 model = tf.make_template('model', config.build_model)
