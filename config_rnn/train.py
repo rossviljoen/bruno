@@ -18,6 +18,7 @@ parser.add_argument('--config_name', type=str, required=True, help='Configuratio
 parser.add_argument('--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
 parser.add_argument('--resume', type=int, default=0, help='Resume training from a checkpoint?')
 parser.add_argument('--tf_seed', type=int, default=0, help='tf rng seed')
+parser.add_argument('--temp', type=int, default=-1, help='temperature (only for use with a tempered config)')
 args = parser.parse_args()
 print('input args:\n', json.dumps(vars(args), indent=4, separators=(',', ':')))
 assert args.nr_gpu == len(''.join(filter(str.isdigit, os.environ["CUDA_VISIBLE_DEVICES"])))
@@ -54,6 +55,10 @@ sys.stderr = sys.stdout
 print('exp_id', experiment_id)
 if args.resume:
     print('Resuming training')
+
+# Set temperature if supplied
+if temp != -1:
+    config.set_temp(args.temp)
 
 # create the model
 model = tf.make_template('model', config.build_model)

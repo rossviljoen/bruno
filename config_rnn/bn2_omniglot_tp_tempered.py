@@ -69,6 +69,7 @@ def build_model(x, init=False, sampling_mode=False):
 
     global student_layer
     if student_layer is None:
+        print(temp)
         student_layer = nn_extra_student.TemperedStudentRecurrentLayer(shape=(ndim,), corr_init=corr_init, nu_init=nu_init, temp=temp)
 
     x_shape = nn_extra_nvp.int_shape(x)
@@ -221,6 +222,9 @@ def build_nvp_dense_model():
             nn_extra_nvp.CouplingLayerDense(mask, name=name, nonlinearity=nonlinearity, n_units=512,
                                             weight_norm=weight_norm))
 
+def set_temp(t):
+    global temp
+    temp = t
 
 def loss(log_probs):
     return -tf.reduce_mean(log_probs)
